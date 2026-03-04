@@ -1,0 +1,215 @@
+:root{
+    --bg:#0f172a;
+    --panel:#0b1828;
+    --muted:#9aa6c0;
+    --accent:#7c3aed;
+    --white:#e6eef8;
+}
+
+/* container transition + layout */
+.app {
+    transition: background-color 260ms ease, color 260ms ease;
+    max-width:980px;
+    margin:0 auto;
+}
+
+* { box-sizing: border-box; }
+
+body{
+    margin:0;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:linear-gradient(180deg,#071028 0%, #041023 100%);
+    color:var(--white);
+    min-height:100vh;
+    padding:24px;
+}
+
+.header { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.brand { font-weight:700; font-size:1.2rem; color:var(--accent); }
+.menu { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+
+.btn {
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.06);
+    color:var(--white);
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+}
+.btn.primary {
+    background:linear-gradient(90deg,var(--accent),#4f46e5);
+    box-shadow:0 6px 18px rgba(79,70,229,0.12);
+}
+
+.panel {
+    background:rgba(255,255,255,0.03);
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:12px;
+}
+/* Panel theme D&D */
+[data-theme="dnd"] .panel {
+    background:
+        /* subtle vignette */
+            radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.03), transparent 8%),
+                /* soft vertical streaks for "cloth" */
+            linear-gradient(180deg, rgba(255,255,255,0.01) 0%, rgba(0,0,0,0.03) 100%),
+                /* main panel color (from --panel var) */
+            var(--panel);
+    border: 1px solid rgba(197,157,31,0.10);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+/* tiny SVG noise overlay to give subtle paper grain (very low opacity so it's not distracting) */
+[data-theme="dnd"] .panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.14;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' fill='%23ffffff'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply; /* multiplies noise into panel color */
+    transform: scale(1.7);
+    will-change: opacity;
+}
+
+/* optional subtle parchment border highlight near top-left */
+[data-theme="dnd"] .panel::before {
+    content: "";
+    position: absolute;
+    left: -120px;
+    top: -120px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.02), transparent 35%);
+    pointer-events: none;
+    opacity: 0.6;
+    mix-blend-mode: overlay;
+}
+
+[data-theme="coc"] .panel {
+    background:
+            radial-gradient(800px 400px at 5% 8%, rgba(255,235,200,0.03), transparent 10%),
+            linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0.06)),
+            var(--panel);
+    border: 1px solid rgba(0,0,0,0.25);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="coc"] .panel::after {
+    content:"";
+    position:absolute; inset:0; pointer-events:none; opacity:0.10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cfilter id='t'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23t)' fill='%23ffffff'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+    transform: scale(1.6);
+}
+
+/* CPR: neon scanline / subtle grid glow */
+[data-theme="cpr"] .panel {
+    background:
+            linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04)),
+            radial-gradient(circle at 10% 10%, rgba(255,45,156,0.02), transparent 8%),
+            var(--panel);
+    border: 1px solid rgba(255,45,156,0.08);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+}
+/* ultra-light horizontal scanlines */
+[data-theme="cpr"] .panel::after {
+    content: ""; position:absolute; inset:0; pointer-events:none; opacity:0.06;
+    background-image: linear-gradient(transparent 50%, rgba(255,255,255,0.02) 51%);
+    background-size: 100% 6px;
+    mix-blend-mode: overlay;
+}
+/* neon border glow on hover for emphasis */
+[data-theme="cpr"] .panel:hover {
+    box-shadow: 0 12px 50px rgba(255,45,156,0.08), 0 6px 24px rgba(0,140,255,0.03);
+}
+
+/* ---------- Rolls / pill styling (restore horizontal pills) ---------- */
+.rolls {
+    display: flex;            /* horizontal layout */
+    flex-direction: row;      /* ensure left-to-right */
+    gap: 8px;                 /* spacing between pills */
+    flex-wrap: wrap;          /* wrap to next line on narrow screens */
+    margin-top: 8px;
+    align-items: center;      /* vertically center if different heights */
+}
+
+.pill {
+    display: inline-flex;          /* inline-level + flex for centering content */
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;               /* keeps pill round-ish for small numbers */
+    padding: 8px 12px;             /* horizontal padding for numeric values */
+    border-radius: 999px;          /* fully rounded */
+    background: rgba(255,255,255,0.04);
+    font-weight: 600;
+    text-align: center;
+    color: var(--white);
+    box-sizing: border-box;
+    white-space: nowrap;           /* prevent numbers from wrapping inside a pill */
+}
+
+/* small responsive tweak so pills don't blow up on very narrow screens */
+@media (max-width: 420px) {
+    .pill { padding: 6px 8px; min-width: 36px; font-size: 0.95rem; }
+}
+
+.small { font-size:0.9rem; color:var(--muted); }
+.assignment-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:8px; }
+
+/* INPUT / SELECT styling (fixed) */
+.input {
+    padding:8px;
+    border-radius:6px;
+    border:1px solid rgba(255,255,255,0.06);
+    background: var(--panel);    /* dark panel bg */
+    color: var(--white);         /* readable text */
+    width:100%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* small custom arrow for select */
+.select-wrap {
+    position: relative;
+}
+.select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--white);
+    pointer-events: none;
+}
+
+/* Select-specific rules (open list readability) */
+select.input option {
+    /* Some browsers ignore option background; at least force readable text */
+    color: #111111;
+    background: #ffffff;
+}
+
+/* Focus state for accessibility */
+.input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.09);
+}
+
+/* footer/card helpers */
+.footer { text-align:center; color:var(--muted); margin-top:18px; font-size:0.9rem; }
+.card { background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:12px; border-radius:10px; }
+.small-muted { color:var(--muted); font-size:0.85rem; }
